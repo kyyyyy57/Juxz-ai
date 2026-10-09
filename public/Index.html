@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0612">
+<title>JUXZ AI</title>
+<style>
+:root{--bg:#0a0612;--panel:#130c20;--line:#36204c;--purple:#a855f7;--pink:#e879f9;--text:#f5edff;--muted:#a99abb}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0,#35154e,transparent 48%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif}
+button,textarea{font:inherit}button{cursor:pointer}
+.app{min-height:100vh;display:flex}
+.sidebar{width:250px;flex-shrink:0;background:#0c0813;border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:18px}
+.brand{display:flex;align-items:center;gap:11px}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#d946ef);display:grid;place-items:center;font-size:23px;font-weight:900;box-shadow:0 0 25px #a855f755}
+.brandname{font-size:20px;font-weight:900;letter-spacing:1px}
+.sub{font-size:10px;color:var(--muted);margin-top:3px}
+.new{border:0;border-radius:12px;background:linear-gradient(110deg,#7c3aed,#b832d9);padding:13px;color:white;font-weight:800}
+.label{font-size:10px;color:#907ca2;letter-spacing:1.5px;font-weight:800}
+.history{display:flex;flex-direction:column;gap:5px;overflow:auto}
+.histrow{display:flex;align-items:center;gap:4px}
+.histtitle{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;background:transparent;border:1px solid transparent;color:#d7c6e8;padding:10px;border-radius:9px;font-size:12px}
+.histtitle.active,.histtitle:hover{background:#211431;border-color:#613580}
+.del{background:transparent;border:0;color:#a99abb;padding:6px}
+.sidebottom{margin-top:auto;border-top:1px solid var(--line);padding-top:15px;color:var(--muted);font-size:11px}
+.main{min-width:0;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.top{height:65px;display:flex;align-items:center;justify-content:space-between;padding:12px 23px;border-bottom:1px solid #ffffff12;background:#0c0815d9}
+.topname{font-size:14px;font-weight:800}
+.topsub{font-size:11px;color:var(--muted);margin-top:3px}
+.badge{border:1px solid #683d89;border-radius:30px;padding:7px 11px;background:#21112f;color:#e8caff;font-size:11px}
+.content{width:100%;max-width:900px;padding:30px 25px 22px;margin:0 auto;flex:1}
+.welcome{padding:24px 0 35px}
+.hero{width:65px;height:65px;border-radius:21px;display:grid;place-items:center;font-size:30px;background:linear-gradient(135deg,#7c3aed,#d946ef);box-shadow:0 0 40px #9333ea55;margin-bottom:23px}
+.eyebrow{font-size:11px;letter-spacing:2px;color:#d8a4ff;font-weight:800}
+h1{font-size:clamp(32px,6vw,49px);line-height:1.15;letter-spacing:-1.5px;margin:12px 0}
+.grad{background:linear-gradient(90deg,#c084fc,#f0abfc,#a78bfa);color:transparent;background-clip:text;-webkit-background-clip:text}
+.intro{font-size:14px;color:var(--muted);line-height:1.8;max-width:540px}
+.suggestions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:26px;max-width:620px}
+.suggestion{background:#150d22;border:1px solid var(--line);border-radius:13px;padding:15px;text-align:left;color:var(--text)}
+.suggestion:hover{border-color:var(--purple);background:#211230}
+.suggestion b{display:block;font-size:13px;margin-bottom:6px}
+.suggestion span{font-size:11px;color:var(--muted);line-height:1.5}
+.messages{display:flex;flex-direction:column;gap:25px}
+.message{display:flex;align-items:flex-start;gap:11px}
+.avatar{width:34px;height:34px;flex-shrink:0;border-radius:11px;display:grid;place-items:center;background:#29153d;border:1px solid #583078;font-weight:850;font-size:12px}
+.messagebody{min-width:0;flex:1}
+.mname{font-size:12px;font-weight:800;margin:3px 0 9px}
+.mname small{font-weight:400;color:var(--muted);margin-left:6px}
+.text{font-size:14px;line-height:1.8;overflow-wrap:anywhere;color:#e9e0f3}
+.text p{margin:0 0 10px}
+.text pre{white-space:pre-wrap;overflow:auto;padding:13px;border:1px solid var(--line);background:#08050e;border-radius:10px;font-size:12px}
+.text code{background:#2b193d;padding:2px 5px;border-radius:4px}
+.text pre code{background:transparent;padding:0}
+.actions{display:flex;gap:7px;margin-top:9px}
+.small{border:1px solid var(--line);background:transparent;color:var(--muted);padding:5px 9px;border-radius:7px;font-size:11px}
+.error{background:#35131f;border:1px solid #8a354f;color:#ffc4d1;padding:12px;border-radius:10px;font-size:13px;line-height:1.6}
+.composerarea{position:sticky;bottom:0;padding:12px 20px 16px;background:linear-gradient(transparent,var(--bg) 18%)}
+.composerwrap{max-width:850px;margin:auto}
+.composer{display:flex;align-items:flex-end;gap:10px;padding:11px;border:1px solid #68408b;border-radius:16px;background:#150d22}
+.composer:focus-within{border-color:#c084fc;box-shadow:0 0 24px #9333ea20}
+#prompt{flex:1;min-width:0;resize:none;max-height:160px;outline:none;border:0;background:transparent;color:var(--text);padding:5px;font-size:14px;line-height:1.6}
+#prompt::placeholder{color:#877596}
+#send{width:42px;height:42px;flex-shrink:0;border:0;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#c026d3);color:white;font-size:19px;font-weight:900}
+#send:disabled{opacity:.45;cursor:wait}
+.disclaimer{text-align:center;color:#796989;font-size:10px;margin-top:9px}
+.mobilebrand{display:none;font-weight:900}
+@media(max-width:680px){.sidebar{display:none}.mobilebrand{display:block}.top{padding:12px 14px}.topsub{display:none}.content{padding:24px 15px}.welcome{padding:14px 0 25px}.hero{width:56px;height:56px}.composerarea{padding:10px 11px 14px}.badge{font-size:10px;padding:6px 8px}.suggestion{padding:12px}.suggestion b{font-size:12px}.suggestion span{font-size:10px}}
+@media(max-width:360px){.suggestions{grid-template-columns:1fr}h1{font-size:32px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">J</div><div><div class="brandname">JUXZ AI</div><div class="sub">YOUR AI ASSISTANT</div></div></div>
+  <button class="new" id="newChat">＋ Chat Baru</button>
+  <div class="label">RIWAYAT PERCAKAPAN</div>
+  <div class="history" id="history"></div>
+  <div class="sidebottom">✦ JUXZ AI Assistant<br><br>Powered by Google Gemini</div>
+</aside>
+<main class="main">
+<header class="top">
+  <div><div class="mobilebrand">JUXZ AI</div><div class="topname">AI Assistant</div><div class="topsub">Belajar, coding, dan kreativitasmu</div></div>
+  <span class="badge">✦ Gemini AI</span>
+</header>
+<section class="content">
+<div class="welcome" id="welcome">
+  <div class="hero">✦</div>
+  <div class="eyebrow">WELCOME TO THE FUTURE</div>
+  <h1>Halo, selamat datang di<br><span class="grad">JUXZ AI.</span></h1>
+  <p class="intro">Asisten AI untuk menjawab pertanyaan, belajar, membuat kode, dan mengembangkan ide kreatifmu. Mau mulai dari mana?</p>
+  <div class="suggestions">
+    <button class="suggestion" data-prompt="Jelaskan JavaScript untuk pemula dengan contoh sederhana."><b>⌘ Belajar Coding</b><span>Mulai belajar pemrograman</span></button>
+    <button class="suggestion" data-prompt="Bantu aku memahami matematika dengan contoh langkah demi langkah."><b>∑ Matematika</b><span>Pahami soal dengan mudah</span></button>
+    <button class="suggestion" data-prompt="Berikan 5 ide proyek aplikasi Android untuk pemula."><b>✧ Ide Kreatif</b><span>Temukan inspirasi baru</span></button>
+    <button class="suggestion" data-prompt="Buatkan jadwal belajar harian sederhana untuk pelajar."><b>◷ Produktivitas</b><span>Atur waktu dan tugasmu</span></button>
+  </div>
+</div>
+<div class="messages" id="messages"></div>
+</section>
+<div class="composerarea">
+  <div class="composerwrap">
+    <div class="composer"><textarea id="prompt" rows="1" maxlength="6000" placeholder="Tanyakan sesuatu kepada JUXZ AI..."></textarea><button id="send" aria-label="Kirim pesan">➤</button></div>
+    <div class="disclaimer">JUXZ AI dapat membuat kesalahan. Periksa kembali informasi penting.</div>
+  </div>
+</div>
+</main>
+</div>
+<script>
+(() => {
+"use strict";
+const $=id=>document.getElementById(id);
+const promptBox=$("prompt"),sendButton=$("send"),messagesBox=$("messages"),welcome=$("welcome"),historyBox=$("history");
+const STORAGE="juxz_ai_chats_v1";
+let chats=[],currentId=null,busy=false;
+
+function makeId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function load(){
+ try{
+  const d=JSON.parse(localStorage.getItem(STORAGE)||"[]");
+  chats=Array.isArray(d)?d.filter(c=>c&&typeof c.id==="string"&&Array.isArray(c.messages)).slice(0,40):[];
+ }catch(e){chats=[]}
+}
+function save(){try{localStorage.setItem(STORAGE,JSON.stringify(chats.slice(0,40)))}catch(e){}}
+function current(){return chats.find(c=>c.id===currentId)}
+function createChat(){
+ const c={id:makeId(),title:"Chat baru",messages:[],updated:Date.now()};
+ chats.unshift(c);chats=chats.slice(0,40);currentId=c.id;save();renderHistory();renderChat();promptBox.focus();
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function format(raw){
+ let t=esc(raw),blocks=[];
+ t=t.replace(/```([a-zA-Z0-9_+-]*)\s*\n?([\s\S]*?)```/g,(_,lang,code)=>{
+  const n=blocks.length;blocks.push("<pre><code>"+code.trim()+"</code></pre>");return "%%BLOCK"+n+"%%";
+ });
+ t=t.replace(/`([^`\n]+)`/g,"<code>$1</code>");
+ t=t.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>");
+ t=t.replace(/(^|[^*])\*([^*\n]+)\*/g,"$1<em>$2</em>");
+ t=t.replace(/^### (.+)$/gm,"<strong>$1</strong>");
+ t=t.replace(/^## (.+)$/gm,"<strong>$1</strong>");
+ t=t.replace(/^# (.+)$/gm,"<strong>$1</strong>");
+ t=t.replace(/^\s*[-*] (.+)$/gm,"<li>$1</li>");
+ t=t.replace(/(<li>.*<\/li>\n?)+/g,m=>"<ul>"+m+"</ul>");
+ t=t.split(/\n{2,}/).map(p=>{
+  p=p.trim();if(!p)return "";
+  if(p.startsWith("%%BLOCK")||p.startsWith("<ul>")||p.startsWith("<pre>"))return p;
+  return "<p>"+p.replace(/\n/g,"<br>")+"</p>";
+ }).join("");
+ blocks.forEach((b,i)=>{t=t.replace("%%BLOCK"+i+"%%",b)});
+ return t;
+}
+function renderHistory(){
+ historyBox.replaceChildren();
+ chats.forEach(c=>{
+  const row=document.createElement("div");row.className="histrow";
+  const b=document.createElement("button");b.className="histtitle"+(c.id===currentId?" active":"");b.textContent="▤ "+c.title;b.title=c.title;
+  b.onclick=()=>{currentId=c.id;renderHistory();renderChat()};
+  const d=document.createElement("button");d.className="del";d.textContent="×";d.title="Hapus chat";
+  d.onclick=()=>{
+   if(busy&&c.id===currentId)return;
+   chats=chats.filter(x=>x.id!==c.id);
+   if(currentId===c.id)currentId=null;
+   save();if(!currentId&&chats.length)currentId=chats[0].id;
+   if(!currentId)createChat();else{renderHistory();renderChat()}
+  };
+  row.append(b,d);historyBox.append(row);
+ });
+}
+function renderChat(){
+ const c=current();messagesBox.replaceChildren();
+ welcome.classList.toggle("hidden",!!(c&&c.messages.length));
+ if(c)c.messages.forEach((m,i)=>appendMessage(m,i));
+}
+function appendMessage(m,i){
+ const wrap=document.createElement("article");wrap.className="message"+(m.role==="user"?" user":"");
+ const avatar=document.createElement("div");avatar.className="avatar";avatar.textContent=m.role==="user"?"K":"J";
+ const body=document.createElement("div");body.className="messagebody";
+ const name=document.createElement("div");name.className="mname";name.textContent=m.role==="user"?"Kamu":"JUXZ AI";
+ const small=document.createElement("small");small.textContent=m.role==="user"?"Kamu":"Gemini";name.append(small);
+ const txt=document.createElement("div");txt.className="text";txt.innerHTML=format(m.text);
+ body.append(name,txt);
+ if(m.role==="model"){
+  const actions=document.createElement("div");actions.className="actions";
+  const copy=document.createElement("button");copy.className="small";copy.textContent="Salin jawaban";
+  copy.onclick=async()=>{try{await navigator.clipboard.writeText(m.text);copy.textContent="Tersalin ✓"}catch(e){copy.textContent="Gagal menyalin"}};
+  actions.append(copy);body.append(actions);
+ }
+ wrap.append(avatar,body);messagesBox.append(wrap);
+}
+function showError(message){
+ const el=document.createElement("div");el.className="error";el.textContent=message;messagesBox.append(el);
+}
+function scrollBottom(){window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"})}
+function resize(){promptBox.style.height="auto";promptBox.style.height=Math.min(promptBox.scrollHeight,160)+"px"}
+async function send(text){
+ if(busy)return;
+ text=(text||promptBox.value).trim();
+ if(!text)return;
+ if(text.length>6000){showError("Pesan terlalu panjang. Maksimal 6.000 karakter.");return}
+ if(!current())createChat();
+ const c=current();
+ c.messages.push({role:"user",text});
+ if(c.messages.length===1)c.title=text.slice(0,36)+(text.length>36?"…":"");
+ c.updated=Date.now();save();renderHistory();renderChat();
+ promptBox.value="";resize();busy=true;sendButton.disabled=true;
+ const typing=document.createElement("div");typing.className="message";typing.id="typing";
+ typing.innerHTML='<div class="avatar">J</div><div class="messagebody"><div class="mname">JUXZ AI</div><div class="text">Sedang berpikir <span class="grad">•••</span></div></div>';
+ messagesBox.append(typing);scrollBottom();
+ try{
+  const payload=c.messages.slice(-20).map(m=>({role:m.role,text:m.text}));
+  const response=await fetch("/api/chat",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({messages:payload})
+  });
+  let data={};
+  try{data=await response.json()}catch(e){}
+  if(!response.ok)throw new Error(data.error||"Permintaan gagal ("+response.status+").");
+  if(typeof data.answer!=="string"||!data.answer.trim())throw new Error("Jawaban AI kosong. Coba lagi.");
+  c.messages.push({role:"model",text:data.answer.trim()});
+  c.updated=Date.now();save();
+ }catch(e){
+  const msg=e instanceof TypeError?"Tidak dapat menghubungi server. Pastikan website sudah di-deploy ke Vercel.":e.message;
+  c.messages.push({role:"model",text:"⚠️ "+msg});
+  c.updated=Date.now();save();
+ }finally{
+  busy=false;sendButton.disabled=false;
+  renderHistory();renderChat();scrollBottom();promptBox.focus();
+ }
+}
+$("newChat").addEventListener("click",()=>{if(!busy)createChat()});
+sendButton.addEventListener("click",()=>send());
+promptBox.addEventListener("input",resize);
+promptBox.addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}
+});
+document.querySelectorAll("[data-prompt]").forEach(b=>{
+ b.addEventListener("click",()=>send(b.dataset.prompt));
+});
+load();
+if(chats.length){currentId=chats[0].id;renderHistory();renderChat()}
+else createChat();
+})();
+</script>
+</body>
+</html>
