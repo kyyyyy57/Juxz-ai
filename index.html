@@ -1,0 +1,573 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0714">
+<meta name="description" content="JUXZ AI — asisten AI modern untuk membantu belajar, coding, dan kreativitas.">
+<title>JUXZ AI — Your AI Assistant</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #0b0714;
+  --panel: #120c20;
+  --panel2: #191028;
+  --line: #302143;
+  --purple: #9b5cff;
+  --pink: #d36cff;
+  --text: #f5efff;
+  --muted: #a99bbd;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  height: 100dvh;
+  overflow: hidden;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at 70% 0%, #281344 0%, transparent 43%),
+    var(--bg);
+  font: 15px/1.6 system-ui, -apple-system, sans-serif;
+}
+button, textarea { font: inherit; }
+button { cursor: pointer; color: inherit; }
+.app { display: flex; height: 100dvh; }
+.sidebar {
+  width: 270px; flex-shrink: 0; display: flex; flex-direction: column;
+  padding: 18px; gap: 18px; background: #0d0917;
+  border-right: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 11px; }
+.logo {
+  display: grid; place-items: center; width: 43px; height: 43px;
+  border-radius: 14px; font-size: 23px;
+  background: linear-gradient(135deg, #a855f7, #6d28d9);
+  box-shadow: 0 0 25px #8b5cf655;
+}
+.brand strong { display: block; font-size: 19px; letter-spacing: 1px; }
+.brand small { color: #bd9af9; font-size: 10px; letter-spacing: 2px; }
+.btn {
+  border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px;
+  background: var(--panel2); text-align: left; transition: .2s;
+}
+.btn:hover { border-color: var(--purple); }
+.primary {
+  background: linear-gradient(120deg, #8b5cf6, #a855f7);
+  border: 0; font-weight: 650; text-align: center;
+  box-shadow: 0 5px 22px #8b5cf622;
+}
+.section-label {
+  color: var(--muted); font-size: 11px; text-transform: uppercase;
+  letter-spacing: 1.6px; margin-bottom: 7px;
+}
+.history { flex: 1; min-height: 0; overflow: auto; }
+.history-item {
+  display: flex; align-items: center; gap: 7px; margin: 4px 0;
+}
+.history-item .open-chat {
+  min-width: 0; flex: 1; overflow: hidden; white-space: nowrap;
+  text-overflow: ellipsis; border: 0; background: transparent;
+  padding: 8px; border-radius: 8px; text-align: left; color: #d7c9eb;
+}
+.history-item .open-chat:hover { background: var(--panel2); }
+.delete-chat {
+  border: 0; background: transparent; color: var(--muted);
+  border-radius: 8px; padding: 6px;
+}
+.delete-chat:hover { color: #ff8585; background: #291521; }
+.profile {
+  border-top: 1px solid var(--line); padding-top: 14px;
+  color: var(--muted); font-size: 12px;
+}
+.main { min-width: 0; flex: 1; display: flex; flex-direction: column; }
+.topbar {
+  height: 66px; flex-shrink: 0; display: flex; align-items: center;
+  justify-content: space-between; gap: 10px; padding: 0 22px;
+  border-bottom: 1px solid #ffffff0d;
+  background: #0b0714aa; backdrop-filter: blur(12px);
+}
+.topbar-title { font-weight: 650; }
+.status { color: #a8f0c5; font-size: 12px; }
+.status::before {
+  content: ""; display: inline-block; width: 7px; height: 7px;
+  margin-right: 7px; border-radius: 50%; background: #4ade80;
+  box-shadow: 0 0 9px #4ade80;
+}
+.mobile-new { display: none; }
+.chat {
+  flex: 1; min-height: 0; overflow-y: auto; scroll-behavior: smooth;
+  padding: 30px max(18px, calc((100% - 800px) / 2));
+}
+.welcome { text-align: center; margin: min(9vh, 75px) auto 35px; }
+.orb {
+  width: 76px; height: 76px; display: grid; place-items: center;
+  margin: auto auto 20px; border-radius: 26px; font-size: 35px;
+  background: linear-gradient(135deg, #24113e, #501c78);
+  border: 1px solid #9b5cff77; box-shadow: 0 0 50px #9b5cff22;
+}
+.welcome h1 { font-size: clamp(25px, 4vw, 38px); margin: 0 0 10px; }
+.gradient {
+  background: linear-gradient(90deg, #c4a0ff, #ef9aff);
+  color: transparent; background-clip: text;
+}
+.welcome p { color: var(--muted); margin: 0 auto; max-width: 480px; }
+.suggestions {
+  display: grid; grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px; max-width: 660px; margin: 25px auto;
+}
+.suggestion {
+  border: 1px solid var(--line); background: #140d21;
+  border-radius: 13px; text-align: left; padding: 14px;
+}
+.suggestion:hover { border-color: var(--purple); background: #1d1230; }
+.suggestion b { display: block; margin-bottom: 3px; font-size: 13px; }
+.suggestion span { color: var(--muted); font-size: 12px; }
+.message { display: flex; gap: 11px; margin: 0 auto 25px; max-width: 760px; }
+.avatar {
+  width: 34px; height: 34px; flex-shrink: 0; display: grid;
+  place-items: center; border: 1px solid var(--line);
+  border-radius: 11px; background: #1b1230;
+}
+.message.user .avatar { background: #35204c; }
+.msg-content { min-width: 0; flex: 1; padding-top: 3px; }
+.msg-head { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.msg-text { overflow-wrap: anywhere; white-space: pre-wrap; }
+.msg-text pre {
+  overflow-x: auto; padding: 13px; border: 1px solid var(--line);
+  border-radius: 10px; background: #080610; white-space: pre;
+}
+.msg-text code { font-family: ui-monospace, monospace; font-size: .92em; }
+.msg-text :not(pre) > code {
+  background: #261638; padding: 2px 5px; border-radius: 5px;
+}
+.msg-text pre code { white-space: pre; }
+.msg-text p { margin: 0 0 10px; }
+.msg-text p:last-child { margin-bottom: 0; }
+.msg-text ul { padding-left: 23px; }
+.msg-actions { margin-top: 9px; }
+.msg-actions button {
+  background: transparent; border: 1px solid var(--line);
+  color: var(--muted); border-radius: 7px; padding: 4px 9px;
+  font-size: 11px;
+}
+.typing { color: #c9aaff; animation: pulse 1.2s infinite; }
+@keyframes pulse { 50% { opacity: .4; } }
+.composer-wrap {
+  flex-shrink: 0; padding: 12px 18px 16px;
+  background: linear-gradient(transparent, #0b0714 20%);
+}
+.composer { max-width: 800px; margin: auto; }
+.input-box {
+  display: flex; align-items: flex-end; gap: 10px;
+  padding: 11px; border: 1px solid #65408a; border-radius: 18px;
+  background: #151020; box-shadow: 0 0 25px #9b5cff0c;
+}
+.input-box:focus-within { border-color: var(--purple); box-shadow: 0 0 25px #9b5cff20; }
+textarea {
+  min-width: 0; flex: 1; resize: none; max-height: 160px;
+  border: 0; outline: 0; color: var(--text); background: transparent;
+  padding: 7px; line-height: 1.5;
+}
+textarea::placeholder { color: #877997; }
+.send {
+  width: 42px; height: 42px; flex-shrink: 0; border: 0;
+  border-radius: 12px; background: linear-gradient(135deg,#9b5cff,#c05cff);
+  font-size: 19px; font-weight: bold;
+}
+.send:disabled { opacity: .4; cursor: not-allowed; }
+.hint { text-align: center; color: #776b88; font-size: 10px; margin: 9px 0 0; }
+.toast {
+  position: fixed; left: 50%; bottom: 95px; transform: translateX(-50%);
+  max-width: calc(100% - 28px); padding: 10px 15px; border-radius: 10px;
+  background: #291b3c; border: 1px solid #7049a2; color: white;
+  display: none; z-index: 5;
+}
+@media(max-width:700px) {
+  .sidebar { display: none; }
+  .topbar { height: 58px; padding: 0 15px; }
+  .mobile-new { display: block; }
+  .chat { padding: 15px 16px; }
+  .welcome { margin: 7vh auto 24px; }
+  .orb { width: 64px; height: 64px; border-radius: 22px; }
+  .suggestions { grid-template-columns: 1fr; gap: 8px; margin-top: 20px; }
+  .suggestion { padding: 11px 13px; }
+  .composer-wrap { padding: 8px 10px 12px; }
+  .input-box { border-radius: 15px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">✦</div>
+      <div><strong>JUXZ AI</strong><small>YOUR AI ASSISTANT</small></div>
+    </div>
+    <button class="btn primary" id="newChat">＋ &nbsp; Chat baru</button>
+    <div class="history">
+      <div class="section-label">Riwayat percakapan</div>
+      <div id="historyList"></div>
+    </div>
+    <div class="profile">
+      <b>JUXZ AI</b><br>
+      Powered by Google Gemini<br>
+      <span id="modelLabel">AI Assistant</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">✦ <span class="gradient">JUXZ AI</span></div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <span class="status" id="status">Siap membantu</span>
+        <button class="btn mobile-new" id="mobileNew">＋ Chat baru</button>
+      </div>
+    </header>
+
+    <section class="chat" id="chat" aria-live="polite">
+      <div id="welcome" class="welcome">
+        <div class="orb">✧</div>
+        <h1>Apa yang ingin <span class="gradient">kamu ketahui?</span></h1>
+        <p>Asisten AI untuk belajar, coding, mencari ide, dan menyelesaikan masalah.</p>
+        <div class="suggestions">
+          <button class="suggestion" data-prompt="Ajari aku JavaScript dari dasar.">
+            <b>⌘ Belajar coding</b><span>Mulai belajar JavaScript</span>
+          </button>
+          <button class="suggestion" data-prompt="Jelaskan cara kerja kecerdasan buatan dengan bahasa sederhana.">
+            <b>✧ Kenali AI</b><span>Penjelasan yang mudah dipahami</span>
+          </button>
+          <button class="suggestion" data-prompt="Buatkan 5 ide proyek website kreatif untuk pemula.">
+            <b>◈ Cari inspirasi</b><span>Ide proyek website baru</span>
+          </button>
+          <button class="suggestion" data-prompt="Bantu aku menyelesaikan soal matematika dan jelaskan langkahnya.">
+            <b>∑ Matematika</b><span>Belajar langkah demi langkah</span>
+          </button>
+        </div>
+      </div>
+      <div id="messages"></div>
+    </section>
+
+    <footer class="composer-wrap">
+      <form class="composer" id="chatForm">
+        <div class="input-box">
+          <textarea id="prompt" rows="1" maxlength="6000"
+            placeholder="Tanyakan sesuatu kepada JUXZ AI..." aria-label="Pesan kamu"></textarea>
+          <button class="send" id="sendBtn" type="submit" aria-label="Kirim pesan">↑</button>
+        </div>
+        <div class="hint">JUXZ AI dapat membuat kesalahan. Periksa kembali informasi penting.</div>
+      </form>
+    </footer>
+  </main>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const STORAGE_KEY = "juxz-ai-chats-v1";
+  const MAX_CHATS = 30;
+
+  let chats = loadChats();
+  let activeId = chats[0]?.id || makeId();
+  let busy = false;
+
+  function makeId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
+
+  function loadChats() {
+    try {
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      return Array.isArray(data) ? data.slice(0, MAX_CHATS) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveChats() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(chats.slice(0, MAX_CHATS)));
+    } catch {
+      toast("Penyimpanan browser penuh. Hapus sebagian riwayat.");
+    }
+  }
+
+  function activeChat() {
+    return chats.find(c => c.id === activeId);
+  }
+
+  function newChat() {
+    if (busy) return;
+    const chat = { id: makeId(), title: "Chat baru", messages: [], updated: Date.now() };
+    chats.unshift(chat);
+    chats = chats.slice(0, MAX_CHATS);
+    activeId = chat.id;
+    saveChats();
+    renderHistory();
+    renderChat();
+    $("prompt").focus();
+  }
+
+  function renderHistory() {
+    const list = $("historyList");
+    list.replaceChildren();
+
+    for (const chat of chats) {
+      const row = document.createElement("div");
+      row.className = "history-item";
+
+      const open = document.createElement("button");
+      open.className = "open-chat";
+      open.textContent = chat.title || "Chat baru";
+      open.title = chat.title || "Chat baru";
+      open.onclick = () => {
+        if (busy) return;
+        activeId = chat.id;
+        renderHistory();
+        renderChat();
+      };
+
+      const del = document.createElement("button");
+      del.className = "delete-chat";
+      del.textContent = "×";
+      del.title = "Hapus percakapan";
+      del.setAttribute("aria-label", "Hapus " + (chat.title || "percakapan"));
+      del.onclick = () => {
+        if (busy) return;
+        chats = chats.filter(c => c.id !== chat.id);
+        if (activeId === chat.id) activeId = chats[0]?.id || makeId();
+        if (!chats.length) {
+          chats.push({ id: activeId, title: "Chat baru", messages: [], updated: Date.now() });
+        }
+        saveChats();
+        renderHistory();
+        renderChat();
+      };
+
+      row.append(open, del);
+      list.append(row);
+    }
+  }
+
+  // Escape semua HTML sebelum mengubah Markdown sederhana.
+  function escapeHTML(value) {
+    return value.replace(/[&<>"']/g, ch => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;",
+      '"': "&quot;", "'": "&#39;"
+    })[ch]);
+  }
+
+  function formatText(text) {
+    let safe = escapeHTML(text);
+    const blocks = [];
+
+    safe = safe.replace(/```([a-zA-Z0-9_-]*)\n?([\s\S]*?)```/g,
+      (_all, lang, code) => {
+        const token = "%%CODE" + blocks.length + "%%";
+        blocks.push("<pre><code>" + code.trimEnd() + "</code></pre>");
+        return token;
+      });
+
+    safe = safe.replace(/`([^`\n]+)`/g, "<code>$1</code>");
+    safe = safe.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    safe = safe.replace(/\*([^*\n]+)\*/g, "<em>$1</em>");
+    safe = safe.replace(/^### (.+)$/gm, "<strong>$1</strong>");
+    safe = safe.replace(/^## (.+)$/gm, "<strong>$1</strong>");
+    safe = safe.replace(/^# (.+)$/gm, "<strong>$1</strong>");
+    safe = safe.replace(/^(?:- |• )(.*)$/gm, "• $1");
+    safe = safe.split(/\n{2,}/).map(p => "<p>" + p.replace(/\n/g, "<br>") + "</p>").join("");
+
+    return safe.replace(/%%CODE(\d+)%%/g, (_m, n) => blocks[Number(n)] || "");
+  }
+
+  function renderChat() {
+    const chat = activeChat();
+    $("messages").replaceChildren();
+    $("welcome").style.display = chat?.messages?.length ? "none" : "block";
+
+    if (!chat) return;
+
+    for (const msg of chat.messages) {
+      if (msg.pending) continue;
+      addMessageElement(msg.role, msg.text);
+    }
+
+    $("chat").scrollTop = $("chat").scrollHeight;
+  }
+
+  function addMessageElement(role, text) {
+    const wrap = document.createElement("article");
+    wrap.className = "message " + (role === "user" ? "user" : "assistant");
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = role === "user" ? "◉" : "✦";
+
+    const content = document.createElement("div");
+    content.className = "msg-content";
+
+    const head = document.createElement("div");
+    head.className = "msg-head";
+    head.textContent = role === "user" ? "Kamu" : "JUXZ AI";
+
+    const body = document.createElement("div");
+    body.className = "msg-text";
+    body.innerHTML = formatText(text);
+
+    content.append(head, body);
+
+    if (role === "model") {
+      const actions = document.createElement("div");
+      actions.className = "msg-actions";
+      const copy = document.createElement("button");
+      copy.textContent = "Salin jawaban";
+      copy.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(text);
+          toast("Jawaban disalin.");
+        } catch {
+          toast("Gagal menyalin. Coba pilih teks secara manual.");
+        }
+      };
+      actions.append(copy);
+      content.append(actions);
+    }
+
+    wrap.append(avatar, content);
+    $("messages").append(wrap);
+    return wrap;
+  }
+
+  function toast(text) {
+    const el = $("toast");
+    el.textContent = text;
+    el.style.display = "block";
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => { el.style.display = "none"; }, 3500);
+  }
+
+  function setBusy(value) {
+    busy = value;
+    $("sendBtn").disabled = value;
+    $("prompt").disabled = value;
+    $("status").textContent = value ? "Sedang berpikir..." : "Siap membantu";
+  }
+
+  async function sendMessage(text) {
+    text = text.trim();
+    if (!text || busy) return;
+    if (text.length > 6000) {
+      toast("Pesan maksimal 6000 karakter.");
+      return;
+    }
+
+    if (!activeChat()) {
+      chats.unshift({ id: activeId, title: "Chat baru", messages: [], updated: Date.now() });
+    }
+
+    const chat = activeChat();
+    chat.messages.push({ role: "user", text });
+    if (chat.title === "Chat baru") {
+      chat.title = text.slice(0, 42) + (text.length > 42 ? "…" : "");
+    }
+    chat.updated = Date.now();
+    saveChats();
+    renderHistory();
+    renderChat();
+    $("prompt").value = "";
+    resizeInput();
+    setBusy(true);
+
+    const typing = addMessageElement("model", "JUXZ AI sedang menyiapkan jawaban…");
+    typing.querySelector(".msg-text").classList.add("typing");
+
+    try {
+      // Kirim hanya pesan percakapan, bukan judul atau metadata.
+      const messages = chat.messages
+        .filter(m => !m.pending && ["user", "model"].includes(m.role))
+        .slice(-20)
+        .map(m => ({ role: m.role, text: m.text }));
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 60000);
+
+      let response;
+      try {
+        response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages }),
+          signal: controller.signal
+        });
+      } finally {
+        clearTimeout(timeout);
+      }
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || "Permintaan gagal (" + response.status + ").");
+      }
+      if (typeof data.answer !== "string" || !data.answer.trim()) {
+        throw new Error("AI mengirim jawaban kosong. Silakan coba lagi.");
+      }
+
+      chat.messages.push({ role: "model", text: data.answer });
+      chat.updated = Date.now();
+      saveChats();
+      renderHistory();
+      renderChat();
+    } catch (error) {
+      typing.remove();
+      const message = error.name === "AbortError"
+        ? "Permintaan terlalu lama. Periksa koneksi internet lalu coba lagi."
+        : error.message || "Tidak dapat menghubungi server AI.";
+      toast(message);
+      addMessageElement("model", "Maaf, jawaban belum berhasil dibuat.\n\n**Masalah:** " + message);
+    } finally {
+      setBusy(false);
+      $("prompt").focus();
+    }
+  }
+
+  function resizeInput() {
+    const el = $("prompt");
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 160) + "px";
+  }
+
+  $("chatForm").addEventListener("submit", e => {
+    e.preventDefault();
+    sendMessage($("prompt").value);
+  });
+
+  $("prompt").addEventListener("input", resizeInput);
+  $("prompt").addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      $("chatForm").requestSubmit();
+    }
+  });
+
+  $("newChat").onclick = newChat;
+  $("mobileNew").onclick = newChat;
+
+  document.querySelectorAll("[data-prompt]").forEach(button => {
+    button.addEventListener("click", () => sendMessage(button.dataset.prompt));
+  });
+
+  if (!chats.length) {
+    chats = [{ id: activeId, title: "Chat baru", messages: [], updated: Date.now() }];
+    saveChats();
+  } else if (!activeChat()) {
+    activeId = chats[0].id;
+  }
+
+  renderHistory();
+  renderChat();
+})();
+</script>
+</body>
+</html>
